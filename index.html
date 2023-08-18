@@ -1,0 +1,140 @@
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>MILKY RUN</title>
+		<body background="2.jpg"></body>
+		<style>
+			body {
+				text-align: center;
+				margin: 0;
+			  }
+			  .container {
+				  position: relative;
+			  }
+			  /* za score */
+			  #blok {
+				position: absolute;
+				left: 30px;
+				top: 30px;
+				background-color: #ad404c;
+				color: black;
+				font-family: TrebuchetMS;
+				padding: 3em
+			  }
+			  /* naslovi */
+			  	h1 {
+				color: #ffffff;
+				font-family: TrebuchetMS;
+				font-size: 20px;
+				text-align: center;
+				}
+				
+				h2 {
+				color: #ad404c;
+				font-family: TrebuchetMS;
+				font-size: 18px;
+				text-align: center;
+				}
+
+				h3 {
+				color: #ffffff;
+				font-family: TrebuchetMS;
+				font-size: 18px;
+				text-align: center;
+				}
+				/* gumbi na dnu strani */
+				.btn-group button {
+        		background-color: #020211;
+       			border: 0.5px solid white;
+				border-radius: 12px;
+        		color: white; /* White text */
+        		padding: 5px 20px; /* Some padding */
+        		cursor: pointer; /* Pointer/hand icon */
+        		float: left; /* Float the buttons side by side */
+    			}
+				.btn-group2 button {
+        		background-color: white;
+       			border: 0.5px solid white;
+				border-radius: 12px;
+        		color: white; 
+        		padding: 5px 10px; 
+        		cursor: pointer; 
+    			}
+			</style>
+
+		<!-- shader za fragmente -->
+	    <script id="shader-fs" type="x-shader/x-fragment">
+	    	precision mediump float;
+				varying vec3 fragLightWeight;
+				varying vec2 fragTexCoord;
+				uniform sampler2D sampler;
+
+	    	void main() {
+					vec4 texColor = texture2D(sampler, fragTexCoord);
+	    		gl_FragColor = vec4(texColor.rgb * fragLightWeight, texColor.a);
+	    	}
+	    </script>
+		<!-- shader za oglisca -->
+	    <script id="shader-vs" type="x-shader/x-vertex">
+	    	precision mediump float;
+
+	    	attribute vec3 vertPosition;
+			attribute vec3 vertNormal;
+	    	attribute vec2 vertTexCoord;
+
+			varying vec3 fragLightWeight;
+	    	varying vec2 fragTexCoord;
+
+	    	uniform mat4 mWorld;
+	    	uniform mat4 mView;
+	    	uniform mat4 mProj;
+			uniform mat3 mNormal;
+			uniform vec3 vAmbientColor;
+			uniform vec3 vLightingDirection;
+			uniform vec3 vDirectionalColor;
+
+	    	void main() {
+	    		fragTexCoord = vertTexCoord;
+	    		gl_Position = mProj * mView * mWorld * vec4(vertPosition, 1.0);
+
+					vec3 transNormal = mNormal * vertNormal;
+					float directionalLightWeight =  max(dot(transNormal, vLightingDirection), 0.0);
+					fragLightWeight = vAmbientColor + vDirectionalColor * directionalLightWeight;
+
+	    	}
+	    </script>
+	</head>
+	<a href="home.html"><img src="noback.png" width:30%;></a>
+
+	<body onload="initAll();">
+		<div class="container">
+			<!-- prikaz igre -->
+			<canvas id="game-surface" width="900" height="700" style="background: url('black.jpg')">
+				Your browser does not support HTML5
+			</canvas>
+			<!-- prikaz rezultata -->
+			<div id="blok">
+				<h3>SCORE : <span id="score"></span></h3>
+			</div>
+			<!-- teksture -->
+			<img id="texture_platform" src="astronavt-texture.jpg" width="0" height="0"></img>
+			<img id="texture_player" src="astronavt-texture.jpg" width="0" height="0"></img>
+			<img id="texture_star" src="zaZvezdo.jpg" width="0" height="0"></img>
+			<img id="texture_path" src="tex_podlaga2.png" width="0" height="0"></img>
+			<img id="texture_raketa" src="rocket-tex-3.jpg" width="0" height="0"></img>
+		</div>
+		<br />
+		<script src="webgl-obj-loader.js"></script>
+		<script src="cannon.js"></script>
+		<script src="gl-matrix.js"></script>
+		<!-- our js -->
+		<script src="app.js"></script>
+		<script src="draw.js"></script>
+
+		<div class="btn-group">
+				<button><a href="home.html"><h2>HOME</h2></button>
+				<button><a href="controls.html"><h2>HOW TO PLAY</h2></button>
+			  </div>
+
+	</body>
+</html>
